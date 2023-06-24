@@ -1,0 +1,10 @@
+{
+    "compilerOptions": {
+        "target": "ES5",
+        "lib": ["es2015", "es2016", "es2017", "es2018", "es2019"],
+        "noImplicitAny": true,
+        "strict": true, // strict와 관련된 속성을 모두 true로 설정
+        // "esModuleInterop": true,
+        "removeComments": true
+    }
+}

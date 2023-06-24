@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<%- include('../head.ejs'); %>
+
+<body>
+
+  <%- include('../header.ejs'); %>
+
+  <%- include('../hero-section.ejs'); %>
+
+  <main id="main">
+
+    <!-- ======= Problem Section ======= -->
+    <section id="problems" class="problem sections-bg">
+      <div class="container" data-aos="fade-up">
+
+        <div class="section-header">
+          <h2>Problems</h2>
+          <p>Here you can look at problems submitted by other students and teachers.</p>
+        </div>
+
+        <div class="problem-isotope" data-problem-filter="*" data-problem-layout="masonry" data-problem-sort="original-order" data-aos="fade-up" data-aos-delay="100">
+
+          <div>
+            <ul class="problem-filters">
+              <li data-filter="*" class="filter-active">All</li>
+              <li data-filter=".filter-Math">Math</li>
+              <li data-filter=".filter-Korean">Korean</li>
+              <li data-filter=".filter-English">English</li>
+              <li data-filter=".filter-Other">Other</li>
+            </ul><!-- End Problem Filters -->
+          </div>
+
+          <div class="row gy-4 problem-container">
+
+            <%
+            // Function to get filter for each problem
+            function getFilter(subject) {
+              let filter = "";
+              if (subject == "수학") {
+                filter = "Math";
+              } else if (subject == "국어") {
+                filter = "Korean";
+              } else if (subject == "영어") {
+                filter = "English";
+              } else {
+                filter = "Other";
+              }
+              return filter;
+            }
+            %>
+
+            <% result.forEach((problem, index) => { %>
+
+            <div class="col-xl-4 col-md-6 problem-item filter-<%= getFilter(problem.subject) %>">
+              <div class="problem-wrap">
+                <a href="<%= problem.filePath %>" data-gallery="problem-gallery-app" class="glightbox"><img src="<%= problem.filePath %>" class="img-fluid" alt=""></a>
+                <div class="problem-info">
+                  <h4><a href="/problem/<%= problem.id %>" title="More Details"><%= problem.title %></a></h4>
+                  <p>
+                    <span style="overflow-x: hidden;"><%= problem.description %></span><br><br>
+                    Subject: <%= problem.subject %><br>
+                    Tag: <%= problem.tag %><br>
+                    By: <%= problem.createdBy %><br>
+                    Date: <%= problem.createdAt.toLocaleDateString() %>
+                  </p>
+                </div>
+              </div>
+            </div><!-- End Problem Item -->
+
+            <% }); %>
+
+          </div><!-- End Problem Container -->
+
+        </div>
+
+      </div>
+    </section><!-- End Problem Section -->
+
+    <%- include('../contact.ejs'); %>
+
+  </main><!-- End #main -->
+
+  <%- include('../footer.ejs'); %>
+
+</body>
+
+</html>

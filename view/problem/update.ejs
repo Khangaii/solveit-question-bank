@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<%- include('../head.ejs'); %>
+
+<body>
+
+  <%- include('../header.ejs'); %>
+
+  
+
+  <main id="main">
+
+    <!-- ======= Contact Section ======= -->
+    <section id="contact" class="contact">
+      <div class="container" data-aos="fade-up">
+
+        <div class="section-header">
+          <h2>Edit</h2>
+          <p>Here you can edit the problem's information.</p>
+        </div>
+
+        <div class="row gx-lg-0 gy-4">
+
+          <div class="d-flex align-items-center justify-content-center">
+            <form id="updateForm" action="/problem" method="post" enctype="multipart/form-data" class="php-email-form">
+              <div class="form-group">
+                <input type="text" name="title" id="title" class="form-control" placeholder="Title" required value="<%= result.title %>">
+              </div>
+              <div class="form-group mt-3">
+                <textarea name="description" id="description" class="form-control" rows="5" placeholder="Description"> <%= result.description %> </textarea>
+              </div>
+              <div class="form-group mt-3">
+                <input type="text" name="answer" id="answer" class="form-control" placeholder="Answer" value="<%= result.answer %>">
+              </div>
+              <div class="form-group mt-3">
+                <input type="text" name="solution" id="solution" class="form-control" placeholder="Solution" required value="<%= result.solution %>">
+              </div>
+              <div class="row mt-3">
+                <div class="col-md-6 form-group">
+                  <input type="text" name="subject" id="subject" class="form-control" placeholder="Subject" required value="<%= result.subject %>">
+                </div>
+                <div class="col-md-6 form-group mt-3 mt-md-0">
+                  <input type="text" name="tag" id="tag" class="form-control" placeholder="Tag" value="<%= result.tag %>">
+                </div>
+              </div>
+              <div class="form-group mt-3">
+                <input type="file" name="file" id="file" class="form-control" required value="<%= result.filePath %>">
+              </div>
+              <div class="form-group mt-3">
+                <input type="text" name="createdBy" id="createdBy" class="form-control" placeholder="Created By" value="<%= result.createdBy %>">
+              </div>
+              <!-- <div class="my-3">
+                <div class="loading">Loading</div>
+                <div class="error-message"></div>
+                <div class="sent-message">Creation success!</div>
+              </div> -->
+              <div class="text-center"><button type="submit">Update</button></div>
+            </form>
+          </div><!-- End Contact Form -->
+
+        </div>
+
+      </div>
+    </section><!-- End Contact Section -->
+
+  </main><!-- End #main -->
+
+  <%- include('../footer.ejs'); %>
+
+  <script>
+    $(document).ready(function() {
+      // Handle form submission
+      $("#updateForm").submit(function(event) {
+        event.preventDefault(); // Prevent the default form submission
+
+        // Create a new FormData object to store the form data
+        var formData = new FormData(this);
+
+        // Send the AJAX request
+        $.ajax({
+          url: "/problem/<%= result._id %>",
+          type: "PUT",
+          data: formData,
+          processData: false, // Prevent jQuery from processing the data
+          contentType: false, // Prevent jQuery from setting the content type
+          success: function(response) {
+            // Handle the success response
+            var url = response.url; // Extract the URL from the response
+            window.location.href = url; // Redirect the user to the URL
+          },
+          error: function(jqXHR, textStatus, errorThrown) {
+            // Handle the error response
+            console.error(jqXHR.responseText);
+            // Display an error message to the user
+          }
+        });
+      });
+    });
+  </script>
+
+</body>
+
+</html>
