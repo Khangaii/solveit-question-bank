@@ -3,6 +3,7 @@
 
 ### Data ###
 data/*
+public/assets/img/problems/*
 
 ### Node ###
 # Logs
