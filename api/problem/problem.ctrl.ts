@@ -15,11 +15,10 @@ const list = async (req: Request, res: Response) => {
 
     try {
         const result = await Problem.find()
-        .sort({ _id: -1 })  // 1: 오름차순, -1: 내림차순
+        .sort({ _id: -1 })
         .limit(limit);
         
-        // res.status(200).json(result);
-        res.status(200).render("problem/list", { result }); // { result: [{}, {}] }
+        res.status(200).render("problem/list", { result });
     } catch(e) {
         console.error;
         res.status(500).json({ message: "목록조회 시 오류가 발생했습니다." });
@@ -43,9 +42,6 @@ const detail = async (req: Request, res: Response) => {
         } else {
             return res.status(200).render("problem/detail", { result });
         }
-
-        // res.status(200).json(result);
-
     } catch(e) {
         console.error(e);
         res.status(500).json({ message: "상세조회 시 오류가 발생했습니다." });
@@ -80,9 +76,6 @@ const create = async (req: Request, res: Response) => {
 
         const result = await problem.save();
 
-        // res.status(201).json({ result });
-        // list(req, res);
-        // res.redirect(`/problem/${result.id}`);
         res.status(201).json({ url: `/problem/${result.id}` });
     } catch(e) {
         console.error(e);
@@ -98,39 +91,43 @@ const update = async (req: Request, res: Response) => {
 
     try {
         const file = req.file;
+        let result;
 
-        if(!file) {
-            return res.status(400).json({ message: "파일이 업로드되지 않았습니다." });
+        if(file) {
+            const problem = await Problem.findById(id);
+
+            if (!problem) {
+                return res.status(404).json({ message: "해당하는 데이터가 없습니다." });
+            }
+
+            fs.unlinkSync(`public/${problem.filePath}`);
+
+            const originalFileName = file.originalname;
+            const fileExtension = path.extname(originalFileName).slice(1);
+
+            const fileName = `problem-${id}.${fileExtension}`;
+            const destination = "/assets/img/problems";
+            const filePath = `${destination}/${fileName}`;
+
+            fs.renameSync(`public${destination}/${originalFileName}`, `public${filePath}`);
+
+            result = await Problem.findByIdAndUpdate(
+                id,
+                { title, description, answer, solution, subject, tag, fileName: originalFileName, fileExtension, filePath, createdBy },
+                { new: true }
+            );
+        } else {
+            result = await Problem.findByIdAndUpdate(
+                id,
+                { title, description, answer, solution, subject, tag, createdBy },
+                { new: true }
+            );
         }
-
-        const problem = await Problem.findById(id);
-
-        if (!problem) {
-            return res.status(404).json({ message: "해당하는 데이터가 없습니다." });
-        }
-
-        fs.unlinkSync(`public/${problem.filePath}`);
-
-        const originalFileName = file.originalname;
-        const fileExtension = path.extname(originalFileName).slice(1);
-
-        const fileName = `problem-${id}.${fileExtension}`;
-        const destination = "/assets/img/problems";
-        const filePath = `${destination}/${fileName}`;
-
-        fs.renameSync(`public${destination}/${originalFileName}`, `public${filePath}`);
-
-        const result = await Problem.findByIdAndUpdate(
-            id,
-            { title, description, answer, solution, subject, tag, fileName: originalFileName, fileExtension, filePath, createdBy },
-            { new: true }
-        );
 
         if (!result) {
             return res.status(404).json({ message: "해당하는 데이터가 없습니다." });
         }
 
-        // res.status(200).json({ result });
         res.status(201).json({ url: `/problem/${result.id}` });
     } catch(e) {
         console.error(e);
@@ -149,10 +146,6 @@ const remove = async (req: Request, res: Response) => {
         if (!result) {
             return res.status(404).json({ message: "해당하는 데이터가 없습니다." });
         }
-
-        
-        // await fs.promises.access(result.filePath, fs.constants.W_OK);
-        // console.log('File deletion permission granted');
 
         fs.unlink(`public${result.filePath}`, (err) => {
             if (err) {
